@@ -15,7 +15,6 @@ import SaveIcon from '@material-ui/icons/Save';
 
 function List() {
   const [todo, setTodo] = useState('');
-  const [editTodo, setEditTodo] = useState('');
   const [list, setList] = useState([
     {
       title: 'Buy Milk',
@@ -44,10 +43,12 @@ function List() {
   ]);
   const inputRef = useRef(null);
   const [completedList, setCompletedList] = useState([]);
+  const [editTodo, setEditTodo] = useState('');
+  const [display, setDisplay] = useState(false);
 
-  useEffect(() => {
-    inputRef.current.focus();
-  }, []);
+  // useEffect(() => {
+  //   inputRef.current.focus();
+  // }, []);
 
   const submit = (e) => {
     e.preventDefault();
@@ -68,16 +69,39 @@ function List() {
     remove(id);
   };
 
-  const edit = (id) => {
-    let edit = list.find((todo) => todo.id === id);
+  const edit = (id, newTitle) => {
+    // let edit = list.find((todo) => todo.id === id);
     // inputRef.current.focus();
 
-    setEditTodo(edit.title);
+    const edit = list.filter((todo) => {
+      if (todo.id === id) {
+        return (todo.title = newTitle);
+      }
+      return todo;
+    });
+
+    setDisplay(true);
+    setEditTodo(newTitle);
+    setList(edit);
+
+    console.log(edit);
     console.log(edit);
   };
 
-  const save = (id) => {
-    console.log('save btn is clicked');
+  const save = (id, newTitle) => {
+    let saveEditedToDos = list.map((todo) => {
+      if (todo.id === id) {
+        todo.title = newTitle;
+      }
+      return todo;
+    });
+    setEditTodo(saveEditedToDos.newTitle);
+    setDisplay(false);
+    setList(saveEditedToDos);
+
+    console.log(todo);
+
+    console.log(saveEditedToDos);
   };
 
   const remove = (id) => {
@@ -113,17 +137,19 @@ function List() {
       </form>
 
       <div className='list'>
-        {list.map((todo, value) => (
+        {list.map((todo) => (
           <div key={todo.id} className='todo'>
             {todo && (
               <span>
-                <input
-                  id={todo.id}
-                  type='text'
-                  value={editTodo}
-                  ref={inputRef}
-                  onChange={(e) => setEditTodo(e.target.value)}
-                />
+                {display ? (
+                  <input
+                    id={todo.id}
+                    type='text'
+                    value={editTodo}
+                    ref={inputRef}
+                    onChange={(e) => setEditTodo(e.target.value)}
+                  />
+                ) : null}
                 {todo.title}
               </span>
             )}
@@ -141,15 +167,29 @@ function List() {
             )}
 
             {todo && (
-              <Button
-                onClick={() => edit(todo.id)}
-                style={{
-                  backgroundColor: '#769fcd',
-                  marginRight: '5px',
-                  marginLeft: '5px',
-                }}>
-                <EditIcon /> <SaveIcon />
-              </Button>
+              <div className='save__edit'>
+                {display ? (
+                  <Button
+                    onClick={() => save(todo.id, todo.newTitle)}
+                    style={{
+                      backgroundColor: '#769fcd',
+                      marginRight: '5px',
+                      marginLeft: '5px',
+                    }}>
+                    <SaveIcon />
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => edit(todo.id, todo.title)}
+                    style={{
+                      backgroundColor: '#769fcd',
+                      marginRight: '5px',
+                      marginLeft: '5px',
+                    }}>
+                    <EditIcon />
+                  </Button>
+                )}
+              </div>
             )}
 
             {todo && (
