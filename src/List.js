@@ -69,39 +69,15 @@ function List() {
     remove(id);
   };
 
-  const edit = (id, newTitle) => {
-    // let edit = list.find((todo) => todo.id === id);
-    // inputRef.current.focus();
-
-    const edit = list.filter((todo) => {
+  const edit = (e, id) => {
+    const edit = list.map((todo) => {
       if (todo.id === id) {
-        return (todo.title = newTitle);
+        todo.title = e.target.value;
       }
       return todo;
     });
-
     setDisplay(true);
-    setEditTodo(newTitle);
     setList(edit);
-
-    console.log(edit);
-    console.log(edit);
-  };
-
-  const save = (id, newTitle) => {
-    let saveEditedToDos = list.map((todo) => {
-      if (todo.id === id) {
-        todo.title = newTitle;
-      }
-      return todo;
-    });
-    setEditTodo(saveEditedToDos.newTitle);
-    setDisplay(false);
-    setList(saveEditedToDos);
-
-    console.log(todo);
-
-    console.log(saveEditedToDos);
   };
 
   const remove = (id) => {
@@ -145,12 +121,13 @@ function List() {
                   <input
                     id={todo.id}
                     type='text'
-                    value={editTodo}
+                    value={todo.title}
                     ref={inputRef}
-                    onChange={(e) => setEditTodo(e.target.value)}
+                    onChange={(e) => edit(e, todo.id)}
                   />
-                ) : null}
-                {todo.title}
+                ) : (
+                  todo.title
+                )}
               </span>
             )}
             {todo && (
@@ -170,7 +147,7 @@ function List() {
               <div className='save__edit'>
                 {display ? (
                   <Button
-                    onClick={() => save(todo.id, todo.newTitle)}
+                    onClick={() => setDisplay(false)}
                     style={{
                       backgroundColor: '#769fcd',
                       marginRight: '5px',
@@ -180,7 +157,7 @@ function List() {
                   </Button>
                 ) : (
                   <Button
-                    onClick={() => edit(todo.id, todo.title)}
+                    onClick={() => setDisplay(true)}
                     style={{
                       backgroundColor: '#769fcd',
                       marginRight: '5px',
